@@ -1,0 +1,67 @@
+{
+ "dit": "acestep-v15-xl-sft",
+ "lm": "",
+ "out": "out1",
+ "jobs": [
+  {
+   "lyrics": "[Instrumental]",
+   "instrumental": true,
+   "timesignature": "4",
+   "duration": 64.0,
+   "thinking": false,
+   "inference_steps": 24,
+   "guidance_scale": 7.0,
+   "shift": 3.0,
+   "bpm": 120,
+   "keyscale": "F major",
+   "caption": "Quirky absurd comedy background music for a funny meme video: bouncy pizzicato strings, marimba, boinging cartoon bass, playful kazoo melody, light claps and snaps, deadpan and silly, clear steady beat, catchy loop, clean mix",
+   "_config": {
+    "batch_size": 2,
+    "seeds": [
+     51,
+     52
+    ]
+   }
+  },
+  {
+   "lyrics": "[Instrumental]",
+   "instrumental": true,
+   "timesignature": "4",
+   "duration": 64.0,
+   "thinking": false,
+   "inference_steps": 24,
+   "guidance_scale": 7.0,
+   "shift": 3.0,
+   "bpm": 112,
+   "keyscale": "Bb major",
+   "caption": "Cheesy elevator bossa nova lounge music, smooth jazz organ and vibraphone melody, soft nylon guitar comping, brushed drums, overly calm and corporate, ironic deadpan comedy mood, loopable, clean mix",
+   "_config": {
+    "batch_size": 2,
+    "seeds": [
+     61,
+     62
+    ]
+   }
+  },
+  {
+   "lyrics": "[Instrumental]",
+   "instrumental": true,
+   "timesignature": "4",
+   "duration": 64.0,
+   "thinking": false,
+   "inference_steps": 24,
+   "guidance_scale": 7.0,
+   "shift": 3.0,
+   "bpm": 124,
+   "keyscale": "C major",
+   "caption": "Cute funky chiptune pop for a desktop pet game trailer, bubbly square wave lead, slap bass, punchy drum machine with claps, playful and catchy, bright happy energy, loopable, clean mix",
+   "_config": {
+    "batch_size": 2,
+    "seeds": [
+     71,
+     72
+    ]
+   }
+  }
+ ]
+}

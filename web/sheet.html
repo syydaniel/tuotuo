@@ -1,0 +1,48 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>sheet</title>
+<style>@font-face{font-family:ZK;src:url(zcool.ttf)} body{margin:0;background:#1d1b26;color:#fff;font:12px -apple-system} canvas{display:block}</style></head>
+<body><canvas id="c"></canvas>
+<script src="lines.js"></script><script src="sound.js"></script><script src="pet.js"></script>
+<script>
+// contact sheet: ?act=moyu&t=0.3,0.8,...&crop=1 renders snapshots of one act (deterministic, 60 fps steps)
+(async function () {
+  await document.fonts.load('17px ZK');
+  const q = new URLSearchParams(location.search), act = q.get('act') || 'moyu';
+  const times = (q.get('t') || '0.3,0.7,1.2,1.8,2.5,3.3,4.2,5.2').split(',').map(Number);
+  const full = q.get('full') === '1', cols = 4, rows = Math.ceil(times.length / cols);
+  const WW = 900, HH = 560, cw = full ? 300 : 280, ch = full ? 187 : 250, sc = full ? cw / WW : 1;
+  const c = document.getElementById('c'), dpr = 2; c.width = cols * cw * dpr; c.height = rows * (ch + 16) * dpr; c.style.width = cols * cw + 'px'; c.style.height = rows * (ch + 16) + 'px';
+  const ctx = c.getContext('2d');
+  const sfx = new TuoSfx(); sfx.log = [];
+  const pet = new TuoPet({ seed: +(q.get('seed') || 3), sfx, skin: +(q.get('skin') || 1), clock: () => new Date(2026, 8, 25, 15, 0) });
+  pet.setWorld({ W: WW, H: HH, floorY: HH - 60, ceilY: 24 });
+  if (q.get('win')) pet.setWindows([{ id: 1, x: 250, y: 300, w: 400, h: 200 }]);
+  pet.x = +(q.get('x') || 450); pet.y = pet.floorY; pet.timers.talk = 1e9; pet.timers.act = 1e9; pet.timers.ball = 1e9;
+  pet.mouse.x = pet.x + 160; pet.mouse.y = pet.y - 200; pet.mouse.seen = true;
+  for (let i = 0; i < 30; i++) pet.update(1 / 60);
+  if (act === 'eat') pet.feed([q.get('file') || '毕业论文_最终版_v8.docx'], pet.x + 120, pet.y - 140); else pet.play(act);
+  let t = 0, k = 0;
+  const off = document.createElement('canvas'); off.width = WW * dpr; off.height = HH * dpr; const o = off.getContext('2d');
+  while (k < times.length) {
+    pet.update(1 / 60); t += 1 / 60;
+    if (q.get('clickAt') && Math.abs(t - +q.get('clickAt')) < 0.009) { if (pet.pie) { pet.pie.hit = true; } else pet.click(); }
+    if (t + 1e-6 >= times[k]) {
+      o.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const g = o.createLinearGradient(0, 0, 0, HH); g.addColorStop(0, '#3a4a7a'); g.addColorStop(1, '#c9876a'); o.fillStyle = g; o.fillRect(0, 0, WW, HH);
+      o.fillStyle = 'rgba(255,255,255,.25)'; o.fillRect(0, pet.floorY, WW, HH - pet.floorY); o.fillRect(0, 0, WW, pet.ceilY);
+      for (const w of pet.wins) { o.fillStyle = '#f4f4f6'; o.fillRect(w.x, w.y, w.w, w.h); o.fillStyle = '#ddd'; o.fillRect(w.x, w.y, w.w, 22); }
+      pet.draw(o);
+      const col = k % cols, row = (k / cols) | 0;
+      const b = pet.bb || [pet.x - 40, pet.y - 80, 80, 80];
+      let sx = 0, sy = 0, sw = WW, sh = HH;
+      if (!full) { sw = cw; sh = ch; sx = Math.min(WW - sw, Math.max(0, b[0] + b[2] / 2 - sw / 2)); sy = Math.min(HH - sh, Math.max(0, b[1] + b[3] - sh + 50)); }
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.drawImage(off, sx * dpr, sy * dpr, sw * dpr, sh * dpr, col * cw * dpr, row * (ch + 16) * dpr, cw * dpr, ch * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.fillStyle = '#fff'; ctx.font = '12px -apple-system'; ctx.fillText(`${act} t=${times[k]}`, col * cw + 4, row * (ch + 16) + ch + 12);
+      k++;
+    }
+  }
+  document.title = 'done';
+  if (q.get('save')) c.toBlob(b => fetch('/png?name=' + q.get('save'), { method: 'POST', body: b }), 'image/png');
+})();
+</script></body></html>

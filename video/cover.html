@@ -1,0 +1,38 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>cover</title>
+<style>@font-face{font-family:ZK;src:url(../web/zcool.ttf)} body{margin:0;background:#111} canvas{height:100vh}</style></head>
+<body><canvas id="c" width="1080" height="1920"></canvas>
+<script src="../web/lines.js"></script><script src="../web/sound.js"></script><script src="../web/pet.js"></script>
+<script>
+// Douyin / 视频号 cover, 1080x1920. ?save=name posts the PNG to the rec server.
+(async function () {
+  await document.fonts.load('80px ZK');
+  const q = new URLSearchParams(location.search), c = document.getElementById('c'), ctx = c.getContext('2d'), U = TuoUtil;
+  // wallpaper like the desktop in the video
+  const g = ctx.createLinearGradient(0, 0, 0, 1920); g.addColorStop(0, '#22406a'); g.addColorStop(0.45, '#3d8b9e'); g.addColorStop(1, '#f3c496'); ctx.fillStyle = g; ctx.fillRect(0, 0, 1080, 1920);
+  for (const [col, y0, a, f, ph] of [['rgba(255,190,140,.35)', 1000, 90, 0.005, 0.5], ['rgba(236,146,112,.55)', 1180, 70, 0.0065, 2.1], ['rgba(245,187,130,.75)', 1380, 60, 0.0055, 4.0], ['rgba(255,221,170,.9)', 1560, 40, 0.007, 1.2]]) {
+    ctx.beginPath(); ctx.moveTo(0, 1920); for (let x = 0; x <= 1080; x += 12) ctx.lineTo(x, y0 + a * Math.sin(x * f + ph) + a * 0.45 * Math.sin(x * f * 2.3 + ph * 1.7)); ctx.lineTo(1080, 1920); ctx.closePath(); ctx.fillStyle = col; ctx.fill();
+  }
+  // headline
+  ctx.save(); ctx.translate(540, 300); ctx.rotate(-0.03); U.label(ctx, '别人的桌宠是猫', 0, 0, 96, '#fff'); ctx.restore();
+  ctx.save(); ctx.translate(540, 470); ctx.rotate(-0.03); U.label(ctx, '我的桌宠是', 0, 0, 132, '#fff'); ctx.restore();
+  ctx.save(); ctx.translate(540, 660); ctx.rotate(-0.05); U.label(ctx, '一坨', 0, 0, 230, '#ffd84f'); ctx.restore();
+  // word cards around the pet
+  const card = (w, col, x, y, r, px = 58) => {
+    ctx.save(); ctx.translate(x, y); ctx.rotate(r); ctx.font = `${px}px ${U.FONT}`; const cw = ctx.measureText(w).width + px;
+    U.wobblyRect(ctx, -cw / 2, -px * 0.8, cw, px * 1.6, px * 0.4, 2, 2); ctx.fillStyle = col; ctx.fill(); U.inkLine(ctx, 6); ctx.stroke();
+    U.label(ctx, w, 0, 2, px, '#fff', { white: false }); ctx.restore();
+  };
+  card('摸鱼', '#2f9cf0', 210, 930, -0.12); card('蚌埠住了', '#ff7eb3', 850, 900, 0.1); card('芭比Q了', '#ff6a00', 180, 1500, 0.08); card('格局打开', '#ffb700', 880, 1520, -0.08);
+  // the pet, big, star-eyed
+  const pet = new TuoPet({ seed: 5, skin: 1, sfx: Object.assign(new TuoSfx(), { log: [] }) });
+  pet.size = 6.4; pet.t = 0.37;
+  ctx.fillStyle = 'rgba(120,70,20,.22)'; ctx.beginPath(); ctx.ellipse(540, 1560, 330, 44, 0, 0, 7); ctx.fill();
+  const rs = pet.baseRS(); Object.assign(rs, { x: 540, y: 1560, look: { x: 0.1, y: 0.2 }, blink: 0, swap: 0, face: 0.3, lw: 20, wob: 0, jx: 0, eyes: 'normal', mouth: 'grin', blush: 0.6 });
+  pet.drawBody(ctx, rs);
+  // footer
+  ctx.save(); ctx.translate(540, 1745); U.wobblyRect(ctx, -330, -58, 660, 116, 50, 1, 2); ctx.fillStyle = '#231f30'; ctx.fill(); U.label(ctx, '抽象桌宠 · Mac 免费下载', 0, 4, 54, '#ffd84f', { white: false, ink: false }); ctx.restore();
+  document.title = 'done';
+  if (q.get('save')) c.toBlob(b => fetch('/png?name=' + q.get('save'), { method: 'POST', body: b }), 'image/png');
+})();
+</script></body></html>

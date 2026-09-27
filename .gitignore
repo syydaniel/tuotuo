@@ -1,0 +1,31 @@
+.DS_Store
+__pycache__/
+.venv/
+
+# build outputs (the DMG is attached to GitHub Releases instead)
+app/build/
+app/icon/AppIcon.iconset/
+dist/*.dmg
+dist/stage/
+发布包/
+
+# contact sheets and generated previews
+web/_sheets/*
+!web/_sheets/shot.py
+
+# promo video: recordings, stems, renders and generated audio stay local
+video/rec/
+video/stems/
+video/captions/
+video/work/
+video/renders/
+video/covers/
+video/copy/
+video/music/out1/
+video/music/*.log
+video/music/overview.png
+video/tts/*.log
+video/vo/qwen_*/
+video/vo/final/
+video/vo/timing.json
+video/vo/*.log

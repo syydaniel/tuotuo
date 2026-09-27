@@ -1,0 +1,38 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>icon</title>
+<style>@font-face{font-family:ZK;src:url(zcool.ttf)} body{margin:0;background:#888} canvas{width:512px;height:512px}</style></head>
+<body><canvas id="c" width="1024" height="1024"></canvas>
+<script src="lines.js"></script><script src="sound.js"></script><script src="pet.js"></script>
+<script>
+// App icon: macOS-style squircle, the blob in the middle. ?save=name posts the PNG to the rec server.
+(async function () {
+  await document.fonts.load('40px ZK');
+  const q = new URLSearchParams(location.search);
+  const c = document.getElementById('c'), ctx = c.getContext('2d');
+  const S = 1024, m = 100, w = S - m * 2, r = w * 0.2237;
+  // squircle (continuous-corner rounded rect)
+  function squircle(x, y, w, h, r) {
+    const k = 0.552 * 1.28;
+    ctx.beginPath(); ctx.moveTo(x + r, y); ctx.lineTo(x + w - r, y);
+    ctx.bezierCurveTo(x + w - r + r * k, y, x + w, y + r - r * k, x + w, y + r); ctx.lineTo(x + w, y + h - r);
+    ctx.bezierCurveTo(x + w, y + h - r + r * k, x + w - r + r * k, y + h, x + w - r, y + h); ctx.lineTo(x + r, y + h);
+    ctx.bezierCurveTo(x + r - r * k, y + h, x, y + h - r + r * k, x, y + h - r); ctx.lineTo(x, y + r);
+    ctx.bezierCurveTo(x, y + r - r * k, x + r - r * k, y, x + r, y); ctx.closePath();
+  }
+  ctx.save(); ctx.shadowColor = 'rgba(0,0,0,.28)'; ctx.shadowBlur = 36; ctx.shadowOffsetY = 14;
+  squircle(m, m, w, w, r); const g = ctx.createLinearGradient(0, m, 0, m + w); g.addColorStop(0, '#fff1b8'); g.addColorStop(1, '#ffc46b'); ctx.fillStyle = g; ctx.fill(); ctx.restore();
+  ctx.save(); squircle(m, m, w, w, r); ctx.clip();
+  // floor shadow + a few doodle sparkles
+  ctx.fillStyle = 'rgba(160,90,20,.18)'; ctx.beginPath(); ctx.ellipse(512, 792, 250, 34, 0, 0, Math.PI * 2); ctx.fill();
+  const U = TuoUtil;
+  for (const [x, y, s] of [[235, 300, 30], [790, 250, 22], [815, 420, 14]]) { ctx.save(); ctx.fillStyle = '#fff'; ctx.beginPath(); for (let i = 0; i < 8; i++) { const a = i / 8 * Math.PI * 2 - Math.PI / 2, rr = i % 2 ? s * 0.38 : s; ctx.lineTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr); } ctx.closePath(); ctx.fill(); U.inkLine(ctx, 6); ctx.stroke(); ctx.restore(); }
+  const pet = new TuoPet({ seed: 5, skin: +(q.get('skin') || 1), sfx: Object.assign(new TuoSfx(), { log: [] }) });
+  pet.size = 6.2; pet.t = 0.37;
+  const rs = pet.baseRS();
+  Object.assign(rs, { x: 512, y: 800, look: { x: 0.15, y: 0.25 }, blink: 0, swap: 0, face: 0.4, lw: 22, wob: 0, jx: 0, sx: 1.02, sy: 1 });
+  pet.drawBody(ctx, rs);
+  ctx.restore();
+  document.title = 'done';
+  if (q.get('save')) c.toBlob(b => fetch('/png?name=' + q.get('save'), { method: 'POST', body: b }), 'image/png');
+})();
+</script></body></html>
